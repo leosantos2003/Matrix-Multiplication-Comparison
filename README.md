@@ -42,7 +42,7 @@ Three versions were developed to analyze the impact of the directives:
 
 * **Unroll:** Complete unrolling of loops, generating dedicated hardware to calculate all cells simultaneously (high area cost, very high speed).
 
-### 2. Manual Design (PC-PO)
+### 2. Manual design (PC-PO)
 The architecture follows the classic model:
 * **Control (PC):** FSM with `IDLE`, `SETUP`, `CALC`, `WRITE_RES` states, and `i, j, k` counter checks.
 
