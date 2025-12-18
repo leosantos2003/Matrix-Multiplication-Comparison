@@ -1,73 +1,85 @@
-# Projeto: Multiplicação de Matrizes 3x3 (HLS & PC-PO)
+# Matrix Multiplication Comparison (HLS & PC-PO)
 
-**Disciplina:** Sistemas Digitais - 2025/2  
-**Professora:** Fernanda Kastensmidt  
-**Autores:**
-- Gabriel Patrocínio
-- Leonardo Santos
+**INF01175 - Sistemas Digitais para Computadores - UFRGS - 2025/2**
 
-## 📋 Descrição do Projeto
+## About
 
-Este projeto consiste na implementação e comparação de arquiteturas de hardware para a multiplicação de duas matrizes quadradas de dimensão $3 \times 3$.
+This project consists of the implementation and comparison of hardware architectures for the multiplication of two square matrices of dimension $3 \times 3$.
 
-O objetivo principal é explorar o compromisso entre **Desempenho (Ciclos de Clock)** e **Área (Recursos de Hardware)** utilizando duas metodologias de design distintas:
-1.  **HLS (High-Level Synthesis):** Síntese de alto nível utilizando C++ com Vitis HLS, explorando diferentes diretivas de otimização.
-2.  **PC-PO (Parte de Controle - Parte Operativa):** Design manual em VHDL descrevendo o fluxo de dados e a máquina de estados finitos (RTL).
+The main objective is to explore the trade-off between **Performance (Clock Cycles)** and **Area (Hardware Resources)** using two distinct design methodologies:
+1. **HLS (High-Level Synthesis):** High-level synthesis using C++ with Vitis HLS, exploring different optimization directives.
+2. **PC-PO (Control Part - Operational Part):** Manual design in VHDL describing the data flow and the finite state machine (RTL).
 
-## 📂 Estrutura dos Arquivos
+## File structure
 
-### Implementação em HLS (C++)
-Os arquivos abaixo destinam-se à síntese no Vitis HLS:
-* `matrix_mult.h`: Definições de tipos (entradas de 8 bits, saída de 32 bits) e dimensão ($N=3$).
-* `matrix_mult.cpp`: Implementação básica (Loop triplo aninhado).
-* `matrix_mult_pipeline.cpp`: Implementação otimizada com diretiva `#pragma HLS PIPELINE`.
-* `matrix_mult_unroll.cpp`: Implementação otimizada com diretiva `#pragma HLS UNROLL` (paralelismo total).
-* `matrix_mult_tb.cpp`: Testbench em C++ para validação funcional antes da síntese.
+### HLS implementation (C++)
+The files below are intended for synthesis in Vitis HLS:
+* `matrix_mult.h`: Definitions of types (8-bit inputs, 32-bit output) and dimension ($N=3$).
 
-### Implementação em VHDL (PC-PO)
-Os arquivos abaixo compõem o design RTL manual:
-* `matrix_mult_top.vhd`: Entidade de topo que conecta a PC e a PO.
-* `matrix_mult_pc.vhd`: **Parte de Controle**. Máquina de Estados (FSM) que gera os sinais de controle (load, clear, incrementos).
-* `matrix_mult_po.vhd`: **Parte Operativa**. Contém os registradores, multiplicador, somador/acumulador e contadores.
-* `pkg_matrix.vhd` (implícito): Definição dos tipos de dados de matriz para o VHDL.
-* `tb_matrix_mult.vhd`: Testbench em VHDL para simulação comportamental.
+* `matrix_mult.cpp`: Basic implementation (nested triple loop).
 
-## 🛠️ Detalhes das Implementações
+* `matrix_mult_pipeline.cpp`: Optimized implementation with the `#pragma HLS PIPELINE` directive.
+
+* `matrix_mult_unroll.cpp`: Optimized implementation with the `#pragma HLS UNROLL` directive (full parallelism).
+
+* `matrix_mult_tb.cpp`: C++ testbench for functional validation before synthesis.
+
+### VHDL implementation (PC-PO)
+The following files comprise the manual RTL design:
+* `matrix_mult_top.vhd`: Top entity that connects the PC and the PO.
+* `matrix_mult_pc.vhd`: **Control Part**. State Machine (FSM) that generates the control signals (load, clear, increments).
+* `matrix_mult_po.vhd`: **Operational Part**. Contains the registers, multiplier, adder/accumulator, and counters.
+* `pkg_matrix.vhd` (implicit): Definition of matrix data types for VHDL.
+* `tb_matrix_mult.vhd`: VHDL testbench for behavioral simulation.
+
+## Implementation details
 
 ### 1. High-Level Synthesis (HLS)
-Foram desenvolvidas três versões para analisar o impacto das diretivas:
-* **Básica:** Sem otimizações de loop. Execução sequencial.
-* **Pipeline:** Uso de `II=1` nos loops internos para permitir o início de uma nova operação a cada ciclo.
-* **Unroll:** Desenrolamento completo dos loops, gerando hardware dedicado para calcular todas as células simultaneamente (custo alto de área, altíssima velocidade).
+Three versions were developed to analyze the impact of the directives:
+* **Basic:** No loop optimizations. Sequential execution.
 
-### 2. Design Manual (PC-PO)
-A arquitetura segue o modelo clássico:
-* **Controle (PC):** FSM com estados `IDLE`, `SETUP`, `CALC`, `WRITE_RES`, e verificações de contadores `i, j, k`.
-* **Operativa (PO):** Utiliza um único multiplicador e acumulador. Realiza a operação linha x coluna sequencialmente, armazenando o resultado parcial até completar a soma dos produtos.
+* **Pipeline:** Use of `II=1` in internal loops to allow the start of a new operation in each cycle.
 
-## 📊 Comparativo de Resultados
+* **Unroll:** Complete unrolling of loops, generating dedicated hardware to calculate all cells simultaneously (high area cost, very high speed).
 
-Os dados abaixo foram obtidos após simulação e síntese (FPGA):
+### 2. Manual Design (PC-PO)
+The architecture follows the classic model:
+* **Control (PC):** FSM with `IDLE`, `SETUP`, `CALC`, `WRITE_RES` states, and `i, j, k` counter checks.
 
-| Implementação | Ciclos de Clock (Latência) | LUTs | Flip-Flops (FF) | DSPs | Observação |
+* **Operative (PO):** Uses a single multiplier and accumulator. Performs the row x column operation sequentially, storing the partial result until the sum of the products is complete.
+
+1. **PC-PO flowchart:**
+
+<img width="1588" height="650" alt="Imagem colada" src="https://github.com/user-attachments/assets/8882d2d2-54d6-42bc-bc90-03ffffe6b97e" />
+
+2. **PC-PO schematic:**
+
+<img width="1457" height="861" alt="Imagem colada" src="https://github.com/user-attachments/assets/56b53e0b-b942-45e3-8b15-51b25ff55725" />
+
+3. **PC finite state machine:**
+
+<img width="1279" height="656" alt="Imagem colada" src="https://github.com/user-attachments/assets/bedada6f-cfce-42dd-92d4-34989f81e878" />
+
+## Results comparison
+
+The data below were obtained after simulation and synthesis (FPGA):
+
+| Implementation | Clock Cycles (Latency) | LUTs | Flip-Flops (FF) | DSPs | Observation |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **HLS (Básico)** | ~160 | 186 | 48 | 1 | Solução mais lenta, baixo paralelismo. |
-| **HLS (Pipeline)** | **23** | 320 | 50 | 2 | Melhor balanço entre área e desempenho. |
-| **HLS (Unroll)** | **9** | 575 | 172 | 18 | Mais rápida, porém com altíssimo custo de área. |
-| **VHDL (PC-PO)** | ~34 | 175 | 361 | 0 | Alto uso de FFs (registradores manuais), sem uso de DSPs. |
+| **HLS (Basic)** | ~160 | 186 | 48 | 1 | Slowest solution, low parallelism. |
+| **HLS (Pipeline)** | **23** | 320 | 50 | 2 | Best balance between area and performance. |
+| **HLS (Unroll)** | **9** | 575 | 172 | 18 | Fastest, but with very high area cost. |
+| **VHDL (PC-PO)** | ~34 | 175 | 361 | 0 | High use of FFs (manual registers), without the use of DSPs. |
 
-### Conclusões Principais
-* A versão **HLS Unroll** é ideal para desempenho máximo, mas consome muitos recursos (18 DSPs).
-* A versão **HLS Pipeline** oferece um excelente ganho de velocidade (23 ciclos) com um aumento moderado de área.
-* A versão **PC-PO** manual teve desempenho razoável (34 ciclos), mas consumiu mais registradores (FF) devido à implementação explícita dos bancos de registradores.
+### Main conclusions
+* The **HLS Unroll** version is ideal for maximum performance, but consumes many resources (18 DSPs).
+* The **HLS Pipeline** version offers an excellent speed gain (23 cycles) with a moderate increase in area.
+* The manual **PC-PO** version had reasonable performance (34 cycles), but consumed more registers (FF) due to the explicit implementation of register banks.
 
-## 🚀 Como Executar
+## License
 
-### Pré-requisitos
-* AMD Xilinx Vivado (para VHDL)
-* AMD Vitis HLS (para C++)
+Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-### Passos
-1.  **Simulação C++:** Compile `matrix_mult_tb.cpp` com a versão desejada do `.cpp` para verificar a lógica.
-2.  **Síntese HLS:** Crie um projeto no Vitis HLS, adicione os arquivos C++ e execute a síntese para obter os relatórios de área e latência.
-3.  **Simulação VHDL:** Crie um projeto no Vivado, adicione os arquivos `.vhd`, defina `tb_matrix_mult` como *top module* de simulação e execute a simulação comportamental.
+## Contact
+
+Leonardo Santos - <leorsantos2003@gmail.com>
