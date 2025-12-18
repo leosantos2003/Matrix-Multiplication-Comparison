@@ -66,7 +66,7 @@ The data below were obtained after simulation and synthesis (FPGA):
 
 | Implementation | Clock Cycles (Latency) | LUTs | Flip-Flops (FF) | DSPs | Observation |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **HLS (Basic)** | ~160 | 186 | 48 | 1 | Slowest solution, low parallelism. |
+| **HLS (Basic)** | 160 | 186 | 48 | 1 | Slowest solution, low parallelism. |
 | **HLS (Pipeline)** | **23** | 320 | 50 | 2 | Best balance between area and performance. |
 | **HLS (Unroll)** | **9** | 575 | 172 | 18 | Fastest, but with very high area cost. |
 | **VHDL (PC-PO)** | ~34 | 175 | 361 | 0 | High use of FFs (manual registers), without the use of DSPs. |
